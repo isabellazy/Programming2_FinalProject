@@ -1,10 +1,10 @@
 # Programming2_FinalProject
 
-# Isabella Zuluaga Yusti - 801427563
+## Isabella Zuluaga Yusti - 801427563
 - izuluaga@charlotte.edu
 
-# Candelaria Domingo - 801481207
+## Candelaria Domingo - 801481207
 - cdomingo@charlotte.edu
 
-# Patrick Bircher - 
+## Patrick Bircher - 
 - pbircher@charlotte.edu
