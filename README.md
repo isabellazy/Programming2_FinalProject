@@ -7,5 +7,5 @@ izuluaga@charlotte.edu
 ## Candelaria Domingo - 801481207
 cdomingo@charlotte.edu
 
-## Patrick Bircher - 
+## Patrick Bircher - 801490468
 pbircher@charlotte.edu
