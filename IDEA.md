@@ -4,7 +4,7 @@
 
 Build a tool that identifies unknown sequences by comparing them against multiple local BLAST databases.
 
-##Core functionality:
+# Core functionality:
 
 - Create one or more local sequence databases.
 - Accept a multi-sequence query file.
