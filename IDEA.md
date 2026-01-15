@@ -1,3 +1,5 @@
+## Final Project for Programming II
+
 ## **2. Multi-Database Local BLAST Classification Tool**
 
 Build a tool that identifies unknown sequences by comparing them against multiple local BLAST databases.
@@ -13,3 +15,8 @@ Core functionality:
 The project should include a strategy to **measure classification accuracy** and discuss how performance changes with different databases or parameters.
 
 ------
+
+## General Explanation:
+
+
+## Objectives:
