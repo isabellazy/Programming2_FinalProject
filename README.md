@@ -9,3 +9,6 @@ cdomingo@charlotte.edu
 
 ## Patrick Bircher - 801490468
 pbircher@charlotte.edu
+
+# License
+All material are released under MIT License, and can be freely used for both academic and commercial purposes.
