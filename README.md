@@ -11,4 +11,4 @@ cdomingo@charlotte.edu
 pbircher@charlotte.edu
 
 # License
-All material are released under MIT License, and can be freely used for both academic and commercial purposes.
+All material are released under GNU GPL License, and can be freely used for both academic and commercial purposes.
