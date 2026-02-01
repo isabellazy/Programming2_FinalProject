@@ -1,6 +1,6 @@
 # Final Project for Programming II
 
-## **2. Multi-Database Local BLAST Classification Tool**
+## **Multi-Database Local BLAST Classification Tool**
 
 Build a tool that identifies unknown sequences by comparing them against multiple local BLAST databases.
 
