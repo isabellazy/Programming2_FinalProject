@@ -5,12 +5,10 @@ Proposed Project Structure:
 multi_db_blast_classifier/  
 main.py  
 config.py  
-database_manager.py  
+create_database.py  
 blast_runner.py  
 classifier.py  
-evaluation.py  
-utils.py  
-README.md  
+evaluation.py   
 
 
 ## Authors: 
