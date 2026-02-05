@@ -2,7 +2,6 @@
 Link to Project: https://github.com/isabellazy/Programming2_FinalProject
 
 Proposed Project Structure:  
-
 multi_db_blast_classifier/  
 main.py  
 config.py  
