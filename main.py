@@ -1,5 +1,3 @@
-main.py
-
 """
 Main entry point for the Multi-Database Local BLAST Classification Tool.
 
