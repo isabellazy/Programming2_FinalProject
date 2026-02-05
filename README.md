@@ -4,15 +4,14 @@ Link to Project: https://github.com/isabellazy/Programming2_FinalProject
 Proposed Project Structure:
 
 multi_db_blast_classifier/
-│
-├── main.py
-├── config.py
-├── database_manager.py
-├── blast_runner.py
-├── classifier.py
-├── evaluation.py
-├── utils.py
-└── README.md
+main.py
+config.py
+database_manager.py
+blast_runner.py
+classifier.py
+evaluation.py
+utils.py
+README.md
 
 
 ## Authors: 
