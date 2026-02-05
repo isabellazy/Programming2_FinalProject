@@ -1,5 +1,3 @@
-blast_runner.py
-
 """
 BLAST execution module.
 
