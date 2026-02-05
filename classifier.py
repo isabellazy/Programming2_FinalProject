@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+################################################################################
+# Script : classifier.py
+# Author : Candelaria Domingo
+# Created: Feb 05, 2026
+# -- Description ----------------------------------------
+# Script that is a Sequence classification module.
+# -- Requirements ---------------------------------------
+# Python
+# import os
+# import sys
+################################################################################
+
 """
 Sequence classification module.
 
