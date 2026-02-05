@@ -1,5 +1,3 @@
-config.py
-
 """
 Configuration module for the Multi-Database BLAST Classification Tool.
 
