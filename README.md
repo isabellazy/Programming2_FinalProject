@@ -20,6 +20,9 @@ blast_runner.py (Running BLAST Searches: running BLAST searches for query sequen
 classifier.py (Selecting the Best Hit: interpreting BLAST results and ranking hits across multiple databases)  
 evaluation.py: (Accuracy & Performance: measures classification accuracy using known sequences)  
 
+## Instructions:
+  ### Building BLAST Database
+
 ## License:
 All material are released under GNU GPL License, and can be freely used for both academic and commercial purposes.
 
