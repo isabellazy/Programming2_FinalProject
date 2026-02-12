@@ -7,7 +7,7 @@ Candelaria Domingo - 801481207 - cdomingo@charlotte.edu
 Patrick Bircher - 801490468 - pbircher@charlotte.edu  
 
 ## Description: 
-This project is designed to evaluate an unknown gene sequence compared to a local BLAST database and return possible sequence matches and evaluate the strength of those matches
+This project is designed to evaluate an unknown gene sequence compared to a local BLAST database, return possible sequence matches, and evaluate the strength of those matches
 
 ## Proposed Project Structure:  
 Proposed Project Structure:  
