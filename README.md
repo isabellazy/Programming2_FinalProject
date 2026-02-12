@@ -5,12 +5,12 @@ Link to Project: https://github.com/isabellazy/Programming2_FinalProject
 Proposed Project Structure:  
 multi_db_blast_classifier/  
 
-main.py (Entry Point: puts together the entire workflow of the project)
+main.py (Entry Point: puts together the entire workflow of the project)  
 config.py (Centralized Configuration: defines all global configuration values used across the project)  
-database_manager.py (Local BLAST Databases: creating, validating, and managing local BLAST databases)
-blast_runner.py (Running BLAST Searches: running BLAST searches for query sequences against multiple local databases and collecting the raw results)
-classifier.py (Selecting the Best Hit: interpreting BLAST results and ranking hits across multiple databases)
-evaluation.py: (Accuracy & Performance: measures classification accuracy using known sequences)
+database_manager.py (Local BLAST Databases: creating, validating, and managing local BLAST databases)  
+blast_runner.py (Running BLAST Searches: running BLAST searches for query sequences against multiple local databases and collecting the raw results)  
+classifier.py (Selecting the Best Hit: interpreting BLAST results and ranking hits across multiple databases)  
+evaluation.py: (Accuracy & Performance: measures classification accuracy using known sequences)  
 
 ## Authors: 
 Isabella Zuluaga Yusti - 801427563 - izuluaga@charlotte.edu  
