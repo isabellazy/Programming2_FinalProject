@@ -10,7 +10,7 @@ Patrick Bircher - 801490468 - pbircher@charlotte.edu
 This project is designed to evaluate an unknown gene sequence compared to a local BLAST database, return possible sequence matches, and evaluate the strength of those matches
 
 ## Proposed Project Structure:  
-    
+  
 multi_db_blast_classifier/     
 ├── main.py  
 ├── Format_Library-Patrick  
