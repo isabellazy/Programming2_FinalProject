@@ -1,3 +1,5 @@
+# By Patrick Bircher  
+
 """
 Database management module.
 
