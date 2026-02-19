@@ -10,7 +10,7 @@ Patrick Bircher - 801490468 - pbircher@charlotte.edu
 This project is designed to evaluate an unknown gene sequence compared to a local BLAST database, return possible sequence matches, and evaluate the strength of those matches
 
 ## Proposed Project Structure:  
-Proposed Project Structure:  
+    
 multi_db_blast_classifier/     
 ├── main.py  
 ├── Format_Library-Patrick  
@@ -23,17 +23,17 @@ multi_db_blast_classifier/
 &nbsp;&nbsp;&nbsp; ├── evaluation.py  
 └── README.md  
 
-main.py (Entry Point: puts together the entire workflow of the project)  
+main.py: Entry Point: puts together the entire workflow of the project  
   
-config.py (Centralized Configuration: defines all global configuration values used across the project)  
+config.py: Centralized Configuration: defines all global configuration values used across the project  
   
-database_manager.py (Local BLAST Databases: creating, validating, and managing local BLAST databases)  
+database_manager.py: Local BLAST Databases: creating, validating, and managing local BLAST databases  
   
-blast_runner.py (Running BLAST Searches: running BLAST searches for query sequences against multiple local databases and collecting the raw results)  
+blast_runner.py: Running BLAST Searches: running BLAST searches for query sequences against multiple local databases and collecting the raw results  
   
-classifier.py (Selecting the Best Hit: interpreting BLAST results and ranking hits across multiple databases)  
+classifier.py: Selecting the Best Hit: interpreting BLAST results and ranking hits across multiple databases  
   
-evaluation.py: (Accuracy & Performance: measures classification accuracy using known sequences)  
+evaluation.py: Accuracy & Performance: measures classification accuracy using known sequences  
 
 
 
