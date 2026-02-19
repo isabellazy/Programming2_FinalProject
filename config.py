@@ -1,3 +1,4 @@
+#By Patrick Bircher
 """
 Configuration module for the Multi-Database BLAST Classification Tool.
 
