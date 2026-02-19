@@ -11,7 +11,16 @@ This project is designed to evaluate an unknown gene sequence compared to a loca
 
 ## Proposed Project Structure:  
 Proposed Project Structure:  
-multi_db_blast_classifier/  
+multi_db_blast_classifier/ 
+│  
+├── main.py  
+├── config.py  
+├── database_manager.py  
+├── blast_runner.py  
+├── classifier.py  
+├── evaluation.py  
+├── utils.py  
+└── README.md  
 
 main.py (Entry Point: puts together the entire workflow of the project)  
 config.py (Centralized Configuration: defines all global configuration values used across the project)  
