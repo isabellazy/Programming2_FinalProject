@@ -1,3 +1,5 @@
+# By Candelaria Domingo  
+
 #!/usr/bin/env python
 ################################################################################
 # Script : classifier.py
