@@ -11,14 +11,16 @@ This project is designed to evaluate an unknown gene sequence compared to a loca
 
 ## Proposed Project Structure:  
 Proposed Project Structure:  
-multi_db_blast_classifier/   
-│  
-├── main.py  
-├── config.py  
-├── database_manager.py  
-├── blast_runner.py  
-├── classifier.py  
-├── evaluation.py  
+multi_db_blast_classifier/     
+├── main.py
+├── Format_Library
+  ├── config.py  
+  ├── database_manager.py
+├──BLAST_Library
+  ├── blast_runner.py
+├──Evaluation_Library
+  ├── classifier.py  
+  ├── evaluation.py  
 ├── utils.py  
 └── README.md  
 
