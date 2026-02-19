@@ -14,14 +14,13 @@ Proposed Project Structure:
 multi_db_blast_classifier/     
 ├── main.py  
 ├── Format_Library-Patrick  
-&nbsp;&nbsp;├── config.py  
-&nbsp;&nbsp;├── database_manager.py  
+&nbsp;&nbsp;&nbsp, ├── config.py  
+&nbsp;&nbsp;&nbsp; ├── database_manager.py  
 ├──BLAST_Library-Isabella  
-&nbsp;&nbsp;├── blast_runner.py  
+&nbsp;&nbsp;&nbsp, ├── blast_runner.py  
 ├──Evaluation_Library-Candelaria  
-&nbsp;&nbsp;├── classifier.py  
-&nbsp;&nbsp;├── evaluation.py  
-├── utils.py  
+&nbsp;&nbsp;&nbsp; ├── classifier.py  
+&nbsp;&nbsp;&nbsp; ├── evaluation.py  
 └── README.md  
 
 main.py (Entry Point: puts together the entire workflow of the project)  
