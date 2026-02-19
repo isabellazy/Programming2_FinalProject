@@ -12,6 +12,7 @@ This project is designed to evaluate an unknown gene sequence compared to a loca
 ## Proposed Project Structure:  
   
 multi_db_blast_classifier/     
+|  
 ├── main.py  
 ├── Format_Library-Patrick  
 &nbsp;&nbsp;&nbsp; ├── config.py  
