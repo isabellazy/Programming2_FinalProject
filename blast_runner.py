@@ -59,8 +59,8 @@ def run_blast_across_databases(query_sequences, databases, blast_params):
     for query_id, sequence in query_sequences.items():
         results[query_id] = []
 
-    for db in databases:
-        hit = run_blast(sequence, db, blast_params)
-        results[query_id].append(hit)
+        for db in databases:
+            hit = run_blast(sequence, db, blast_params)
+            results[query_id].append(hit)
 
     return results    
