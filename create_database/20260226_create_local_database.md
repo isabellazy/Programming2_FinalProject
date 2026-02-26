@@ -1,7 +1,11 @@
-import os
-import subprocess
-import shutil
+# Create Database Function:
 
+- 02/26/2026
+- Create Database Function
+- Patrick Bircher
+
+## Code for Function
+```
 def create_local_database(fasta_path, db_name, db_type):
     """
     Create a local BLAST database from a FASTA file.
@@ -62,3 +66,23 @@ if __name__ == "__main__":
         db_name="new_blast_db",
         db_type="nucleotide"
     )
+```
+
+## Example Input
+- reference.fasta
+	- name of fasta file to be converted into blast_db. Housed in same directory as create_local_database.py. By Default the function searches for "reference.fasta" 
+- db_name
+	- name of database to be created. By default the function will return "new_blast_db"
+- db_type
+	- classification of database type. Will accept "nucleotide" and "protein"
+
+## Example Output
+- if successful, function will return "BLAST Database 'db_name' created successfully."
+- if unsuccessful, function will return error code corresponding to associated error
+
+## How to test
+- in directory containing:
+	- create_local_database.py
+	- reference.fasta
+  python create_local_database.py
+- BLAST database files should populate. 
