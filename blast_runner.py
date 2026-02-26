@@ -35,6 +35,7 @@ def run_blast(query_sequence, database, blast_params):
     3. Parse and return the BLAST output.
     """
     pass
+    
 def run_blast_across_databases(query_sequences, databases, blast_params):
     """
     Run BLAST searches for all queries across all databases.
@@ -52,4 +53,14 @@ def run_blast_across_databases(query_sequences, databases, blast_params):
     2. For each query, run BLAST against every database.
     3. Store results in a unified data structure.
     """
-    pass
+
+    results = {}
+
+    for query_id, sequence in query_sequences.items():
+        results[query_id] = []
+
+    for db in databases:
+        hit = run_blast(sequence, db, blast_params)
+        results[query_id].append(hit)
+
+    return results    
