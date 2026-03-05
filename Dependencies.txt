@@ -1,6 +1,7 @@
 ## Required Dependencies for BLAST database creation:
 
 # blast_setup.yml - Installs required dependencies for NCBI BLAST+ toolkit, module used to make blast databases
+usage instructions: When running the create_database step, download file and run "conda activate blast_database"
   dependencies:
   - _openmp_mutex=4.5
   - blast=2.16.0
