@@ -40,4 +40,24 @@ def main():
     8. If ground truth labels exist, evaluate classification accuracy.
     9. Save results and evaluation summaries.
     """
-    pass
+
+    config = load_config()
+
+    databases = prepare_all_databases(config["databases"])
+
+    queries = load_fasta(config["query_file"])
+
+    blast_results = run_blast_across_databases(
+        queries,
+        databases,
+        config["blast_params"]
+    )
+
+    predictions = classify_all_queries(blast_results)
+
+    if config.get("ground_truth"):
+        evaluate_predictions(predictions, config["ground_truth"])
+
+
+if _name_ == "_main_":
+    main()
