@@ -1,4 +1,5 @@
 # By Isabella Zuluaga Yusti  
+#!/usr/bin/env python3
 
 """
 BLAST execution module.
