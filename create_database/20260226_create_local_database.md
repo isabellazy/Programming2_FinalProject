@@ -7,8 +7,8 @@
 ## Usage
 NOTE: Windows Users must load conda environments in WSL. Linux and MacOS users can directly use the terminal. 
 1.) Donwload "blast_database.yml" from the Conda_Environments folder
-2.) In the terminal enter ``` conda env create --file blast_database.yml -n projenv``` 
-3.) to activate conda environment: ``` conda activate projenv ```
+2.) In the terminal enter ```conda env create --file blast_database.yml -n projenv``` 
+3.) to activate conda environment: ```conda activate projenv```
 ## Code for Function
 ```
 def create_local_database(fasta_path, db_name, db_type):
