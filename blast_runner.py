@@ -34,7 +34,15 @@ def run_blast(query_sequence, database, blast_params):
     2. Execute the BLAST command locally.
     3. Parse and return the BLAST output.
     """
-    pass
+
+    # Placeholder result
+    return {
+        "database": database,
+        "score": 100,
+        "evalue": 1e-10,
+        "identity": 98.5,
+        "subject_id": "mock_hit"
+    }
     
 def run_blast_across_databases(query_sequences, databases, blast_params):
     """
