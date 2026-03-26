@@ -1,0 +1,11 @@
+name: blast_database
+channels:
+  - biobakery
+  - conda-forge
+  - bioconda
+  - defaults
+  - nodefaults
+dependencies:
+  - python=3.11
+  - blast
+prefix: /users/pbircher/.conda/envs/blast_database
