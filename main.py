@@ -1,3 +1,6 @@
+# By Isabella Zuluaga Yusti  
+#!/usr/bin/env python3
+
 """
 Main entry point for the Multi-Database Local BLAST Classification Tool.
 
