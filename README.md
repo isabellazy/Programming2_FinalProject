@@ -41,3 +41,6 @@ evaluation.py: Accuracy & Performance: measures classification accuracy using kn
 ## License:
 All material are released under GNU GPL License, and can be freely used for both academic and commercial purposes.
 
+## References:
+1.)Camacho, C. Building a BLAST database with your (local) sequences. in BLAST® Command Line Applications User Manual [Internet] (National Center for Biotechnology Information (US), 2024).
+2.)NCBI Magic-BLAST : Create a BLAST database. https://ncbi.github.io/magicblast/cook/blastdb.html.
