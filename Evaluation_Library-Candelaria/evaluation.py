@@ -10,7 +10,10 @@ from collections import defaultdict, Counter
 # Core accuracy metrics
 # ---------------------------------------------------------------------------
 
-def compute_accuracy(predictions, ground_truth):
+def compute_accuracy(
+    predictions: dict[str, str],
+    ground_truth: dict[str, str],
+) -> dict[str, float | int | dict]:
     """
     Compute classification accuracy metrics.
 
@@ -36,14 +39,15 @@ def compute_accuracy(predictions, ground_truth):
     >>> m['accuracy']
     0.3333...
     """
-    common_ids = set(predictions.keys()) & set(ground_truth.keys())
+    common_ids: set[str] = set(predictions.keys()) & set(ground_truth.keys())
     if not common_ids:
         raise ValueError("No common sequence IDs between predictions and ground_truth.")
 
     num_total = len(common_ids)
     num_correct = 0
 
-    confusion = defaultdict(lambda: defaultdict(int))
+    confusion: defaultdict[str, defaultdict[str, int]] = defaultdict(lambda: defaultdict(int))
+
     for sid in common_ids:
         true_label = ground_truth[sid]
         pred_label = predictions[sid]
@@ -51,10 +55,11 @@ def compute_accuracy(predictions, ground_truth):
         if true_label == pred_label:
             num_correct += 1
 
-    accuracy = num_correct / num_total
+    accuracy: float = num_correct / num_total
 
-    all_labels = set(ground_truth[sid] for sid in common_ids)
-    per_class = {}
+    all_labels: set[str] = set(ground_truth[sid] for sid in common_ids)
+    per_class: dict[str, dict[str, float | int]] = {}
+
     for label in all_labels:
         tp = confusion[label][label]
         fp = sum(confusion[other][label] for other in all_labels if other != label)
@@ -93,7 +98,10 @@ def compute_accuracy(predictions, ground_truth):
     }
 
 
-def print_metrics_report(metrics, title="Classification Report"):
+def print_metrics_report(
+    metrics: dict[str, float | int | dict],
+    title: str = "Classification Report",
+) -> None:
     """
     Pretty-print a metrics dict returned by compute_accuracy().
     """
@@ -118,15 +126,15 @@ def print_metrics_report(metrics, title="Classification Report"):
 
     sys.stdout.write(f"\n  Confusion matrix (rows=true, cols=predicted):\n")
 
-    all_labels = sorted(metrics['per_class'].keys())
-    col_w = max(len(l) for l in all_labels) + 2
-    header_row = " " * (col_w + 2) + "".join(f"{l:>{col_w}}" for l in all_labels)
+    all_labels: list[str] = sorted(metrics['per_class'].keys())
+    col_w: int = max(len(l) for l in all_labels) + 2
+    header_row: str = " " * (col_w + 2) + "".join(f"{l:>{col_w}}" for l in all_labels)
     sys.stdout.write("  " + header_row + "\n")
 
     for true_label in all_labels:
-        row = f"  {true_label:<{col_w}} "
+        row: str = f"  {true_label:<{col_w}} "
         for pred_label in all_labels:
-            count = metrics['confusion_matrix'].get(true_label, {}).get(pred_label, 0)
+            count: int = metrics['confusion_matrix'].get(true_label, {}).get(pred_label, 0)
             row += f"{count:>{col_w}}"
         sys.stdout.write(row + "\n")
 
@@ -137,15 +145,20 @@ def print_metrics_report(metrics, title="Classification Report"):
 # Parameter / database effect analysis
 # ---------------------------------------------------------------------------
 
-def analyze_parameter_effects(results, parameter_settings):
-    common_keys = set(results.keys()) & set(parameter_settings.keys())
+def analyze_parameter_effects(
+    results: dict[str, dict[str, float | int | dict]],
+    parameter_settings: dict[str, dict],
+) -> list[dict]:
 
-    summary = []
+    common_keys: set[str] = set(results.keys()) & set(parameter_settings.keys())
+
+    summary: list[dict] = []
+    
     for key in common_keys:
-        metrics = results[key]
-        params  = parameter_settings[key]
+        metrics: dict[str, float | int | dict] = results[key]
+        params: dict  = parameter_settings[key]
 
-        entry = {'setting_key': key}
+        entry: dict = {'setting_key': key}
         entry.update(params)
         entry['accuracy']     = metrics['accuracy']
         entry['macro_f1']     = metrics['macro_f1']
@@ -158,7 +171,11 @@ def analyze_parameter_effects(results, parameter_settings):
     return summary
 
 
-def print_parameter_effects_report(summary, title="Parameter Effect Analysis"):
+def print_parameter_effects_report(
+    summary: list[dict],
+    title: str = "Parameter Effect Analysis",
+) -> None:
+
     if not summary:
         sys.stdout.write("No parameter effect data to display.\n")
         return
@@ -167,12 +184,12 @@ def print_parameter_effects_report(summary, title="Parameter Effect Analysis"):
     sys.stdout.write(f"  {title}\n")
     sys.stdout.write(f"{'=' * 65}\n")
 
-    fixed_keys = {'setting_key', 'accuracy', 'macro_f1', 'weighted_f1',
+    fixed_keys: set[str] = {'setting_key', 'accuracy', 'macro_f1', 'weighted_f1',
                   'num_correct', 'num_total'}
-    param_keys = [k for k in summary[0].keys() if k not in fixed_keys]
+    param_keys: list[str] = [k for k in summary[0].keys() if k not in fixed_keys]
 
     col_w = 18
-    header = f"  {'Setting':<22}"
+    header: str = f"  {'Setting':<22}"
     for pk in param_keys:
         header += f"{pk:>{col_w}}"
     header += f"{'Accuracy':>{col_w}}{'MacroF1':>{col_w}}{'WeightedF1':>{col_w}}"
@@ -180,17 +197,17 @@ def print_parameter_effects_report(summary, title="Parameter Effect Analysis"):
     sys.stdout.write(f"  {'-' * (22 + col_w * (len(param_keys) + 3))}\n")
 
     for entry in summary:
-        row = f"  {entry['setting_key']:<22}"
+        row: str = f"  {entry['setting_key']:<22}"
         for pk in param_keys:
-            val = entry.get(pk, 'N/A')
+            val: object = entry.get(pk, 'N/A')
             row += f"{str(val):>{col_w}}"
         row += (f"{entry['accuracy']:>{col_w}.4f}"
                 f"{entry['macro_f1']:>{col_w}.4f}"
                 f"{entry['weighted_f1']:>{col_w}.4f}")
         sys.stdout.write(row + "\n")
 
-    best  = summary[0]
-    worst = summary[-1]
+    best: dict  = summary[0]
+    worst: dict = summary[-1]
 
     sys.stdout.write(f"\n  Best  setting : {best['setting_key']}  "
                      f"(weighted F1 = {best['weighted_f1']:.4f})\n")
@@ -198,13 +215,12 @@ def print_parameter_effects_report(summary, title="Parameter Effect Analysis"):
                      f"(weighted F1 = {worst['weighted_f1']:.4f})\n")
     sys.stdout.write("\n")
 
-
-def load_label_file(file_path):
+def load_label_file(file_path: str) -> dict[str, str]:
     if not os.path.isfile(file_path):
         raise FileNotFoundError(f"Label file not found: {file_path}")
 
-    labels = {}
-
+    labels: dict[str, str] = {}
+    
     with open(file_path, "r", encoding="utf-8") as infile:
         for line in infile:
             line = line.strip()
@@ -212,7 +228,7 @@ def load_label_file(file_path):
             if not line:
                 continue
 
-            parts = line.split("\t")
+            parts: list[str] = line.split("\t")
             if len(parts) != 2:
                 continue
 
@@ -220,8 +236,10 @@ def load_label_file(file_path):
 
     return labels
 
-
-def evaluate_classification_file(classification_file, ground_truth_file):
-    predictions = load_label_file(classification_file)
-    ground_truth = load_label_file(ground_truth_file)
+def evaluate_classification_file(
+    classification_file: str,
+    ground_truth_file: str,
+) -> dict[str, float | int | dict]:
+    predictions: dict[str, str] = load_label_file(classification_file)
+    ground_truth: dict[str, str] = load_label_file(ground_truth_file)
     return compute_accuracy(predictions, ground_truth)
