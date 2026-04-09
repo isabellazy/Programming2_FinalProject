@@ -1,6 +1,5 @@
-# By Candelaria Domingo
-
 #!/usr/bin/env python3
+#By Candelaria Domingo
 
 """
 Sequence classification module.
@@ -132,53 +131,110 @@ def classify_sequences(all_query_results, evalue_threshold=1e-5, identity_thresh
 
     return predictions
 
-
-def main():
+def load_blast_results(results_file):
     """
-    Demonstration / smoke-test for the classifier module.
+    Load BLAST results from a text file with this format:
 
-    In the full pipeline this module is called by main.py after
-    blast_runner.py has produced the raw BLAST results.
+    Query: query_name
+    db1    subject_id    identity    alignment_length    evalue    bitscore
+
+    Output:
+    - dict mapping query_id -> list of hit dicts
     """
-    # --- Synthetic example data ------------------------------------------
-    # Two queries; hits come from two imaginary databases ("viral_db" and
-    # "bacterial_db").
-    example_results = {
-        "query_seq_1": [
-            {"db": "viral_db",     "subject_id": "NC_002023", "identity": 97.5,
-             "evalue": 1e-120, "bitscore": 450, "label": "Influenza A virus"},
-            {"db": "bacterial_db", "subject_id": "AB123456",  "identity": 62.0,
-             "evalue": 5e-3,  "bitscore": 80,  "label": "Streptococcus pyogenes"},
-        ],
-        "query_seq_2": [
-            {"db": "viral_db",     "subject_id": "NC_001608", "identity": 85.0,
-             "evalue": 3e-60,  "bitscore": 210, "label": "Rabies lyssavirus"},
-            {"db": "bacterial_db", "subject_id": "XY789012",  "identity": 88.0,
-             "evalue": 1e-80,  "bitscore": 290, "label": "Escherichia coli"},
-        ],
-        "query_seq_3": [],   # No BLAST hits at all
-    }
+    if not os.path.isfile(results_file):
+        raise FileNotFoundError(f"Results file not found: {results_file}")
 
-    print("=== Classifier Demo ===\n")
+    all_query_results = {}
+    current_query = None
 
-    for query_id, hits in example_results.items():
-        print(f"Query: {query_id}")
-        ranked = rank_hits(hits)
-        if ranked:
-            print(f"  Ranked hits (best first):")
-            for rank, h in enumerate(ranked, 1):
-                print(f"    {rank}. [{h['db']}] {h['subject_id']}  "
-                      f"identity={h['identity']}%  evalue={h['evalue']:.1e}  "
-                      f"bitscore={h['bitscore']}  label={h.get('label','N/A')}")
-        else:
-            print("  No hits.")
-        print()
+    with open(results_file, "r", encoding="utf-8") as infile:
+        for line in infile:
+            line = line.strip()
 
-    predictions = classify_sequences(example_results)
-    print("=== Predicted Classifications ===")
-    for qid, label in predictions.items():
-        print(f"  {qid}: {label}")
+            if not line:
+                continue
+
+            if line.startswith("Query: "):
+                current_query = line.replace("Query: ", "", 1)
+                all_query_results[current_query] = []
+                continue
+
+            parts = line.split("\t")
+
+            if len(parts) != 6:
+                continue
+
+            hit = {
+                "db": parts[0],
+                "subject_id": parts[1],
+                "identity": float(parts[2]),
+                "alignment_length": int(parts[3]),
+                "evalue": float(parts[4]),
+                "bitscore": float(parts[5]),
+            }
+
+            if current_query is not None:
+                all_query_results[current_query].append(hit)
+
+    return all_query_results
 
 
-if __name__ == "__main__":
-    main()
+def classify_results_file(results_file, evalue_threshold=1e-5, identity_threshold=70.0):
+    """
+    Read a BLAST results file and classify all queries.
+
+    Output:
+    - dict mapping query_id -> predicted label
+    """
+    all_query_results = load_blast_results(results_file)
+
+    predictions = classify_sequences(
+        all_query_results,
+        evalue_threshold=evalue_threshold,
+        identity_threshold=identity_threshold
+    )
+
+    return predictions
+
+
+def save_classification_results(predictions, results_file):
+    """
+    Save classification results in the same results directory.
+
+    Example:
+    results/q1/q1_results.txt -> results/q1/q1_classification.txt
+    """
+    if not os.path.isfile(results_file):
+        raise FileNotFoundError(f"Results file not found: {results_file}")
+
+    results_dir = os.path.dirname(results_file)
+    results_base = os.path.basename(results_file)
+
+    if results_base.endswith("_results.txt"):
+        output_name = results_base.replace("_results.txt", "_classification.txt")
+    else:
+        output_name = "classification.txt"
+
+    output_file = os.path.join(results_dir, output_name)
+
+    with open(output_file, "w", encoding="utf-8") as out:
+        for query_id, label in predictions.items():
+            out.write(f"{query_id}\t{label}\n")
+
+    sys.stdout.write(f"Classification results saved in: {output_file}\n")
+    return output_file
+
+
+def classify_results_file(results_file, evalue_threshold=1e-5, identity_threshold=70.0, save_output=False):
+    all_query_results = load_blast_results(results_file)
+
+    predictions = classify_sequences(
+        all_query_results,
+        evalue_threshold=evalue_threshold,
+        identity_threshold=identity_threshold
+    )
+
+    if save_output:
+        save_classification_results(predictions, results_file)
+
+    return predictions
