@@ -45,7 +45,7 @@ This will:
 python3 main.py --show_config
 ```
 
-Or with custom config (upload new configuration file):
+Or with custom config (you need to upload new configuration file):
 
 ```bash
 python3 main.py --show_config --config my_config.txt
@@ -69,7 +69,7 @@ python3 main.py --run_blast --query_file queries/query1.fasta
 
 ---
 
-# Output Structure
+# Example Output Structure
 
 ```
 results/
