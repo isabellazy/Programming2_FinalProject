@@ -27,7 +27,7 @@ db2
 # 2. Create or Use a Database
 
 ```bash
-python3 main.py --db_name db1 --fasta_file reference.fasta --db_type nucl
+python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
 ```
 
 This will:
@@ -57,13 +57,13 @@ python3 main.py --show_config --config my_config.txt
 ## Run against one database
 
 ```bash
-python3 main.py --run_blast --db_name db1 --query_file queries/q1.fasta
+python3 main.py --run_blast --db_name db1 --query_file queries/query1.fasta
 ```
 
 ## Run against ALL databases
 
 ```bash
-python3 main.py --run_blast --query_file queries/q1.fasta
+python3 main.py --run_blast --query_file queries/query1.fasta
 ```
 
 ---
@@ -90,7 +90,7 @@ db1	seq_bacteria_1	100.0	35	5.41e-17	65.8
 # 5. Classification
 
 ```bash
-python3 main.py --classify results/q1/q1_results.txt
+python3 main.py --classify results/query1/query1_results.txt
 ```
 
 Output (console):
@@ -103,7 +103,7 @@ query_match_virus	seq_virus_1
 Also generates:
 
 ```
-results/q1/q1_classification.txt
+results/query1/query1_classification.txt
 ```
 
 ---
@@ -121,9 +121,7 @@ query_no_match	Unclassified
 Run:
 
 ```bash
-python3 main.py \
-  --evaluate results/q1/q1_classification.txt \
-  --ground_truth results/q1/truth_labels.txt
+python3 main.py --evaluate results/query1/query1_classification.txt --ground_truth Evaluation_Library-Candelaria/truth_labels.txt
 ```
 
 ---
@@ -145,16 +143,16 @@ python3 main.py \
 
 ```bash
 # Create database
-python3 main.py --db_name db1 --fasta_file ref.fasta --db_type nucl
+python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
 
 # Run BLAST
-python3 main.py --run_blast --query_file queries/q1.fasta
+python3 main.py --run_blast --query_file queries/query1.fasta
 
 # Classify
-python3 main.py --classify results/q1/q1_results.txt
+python3 main.py --classify results/query1/query1_results.txt
 
 # Evaluate
-python3 main.py --evaluate results/q1/q1_classification.txt --ground_truth results/q1/truth_labels.txt
+python3 main.py --evaluate results/query1/query1_classification.txt --ground_truth Evaluation_Library-Candelaria/truth_labels.txt
 ```
 
 ---
