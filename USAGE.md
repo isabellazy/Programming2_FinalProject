@@ -15,7 +15,7 @@ conda activate python_project
 python3 main.py --list_databases
 ```
 
-Output:
+Example Output:
 
 ```
 Available BLAST databases:
@@ -45,7 +45,7 @@ This will:
 python3 main.py --show_config
 ```
 
-Or with custom config:
+Or with custom config (upload new configuration file):
 
 ```bash
 python3 main.py --show_config --config my_config.txt
@@ -94,7 +94,7 @@ db1	seq_bacteria_1	100.0	35	5.41e-17	65.8
 python3 main.py --classify results/query1/query1_results.txt
 ```
 
-Output (console):
+Example Output (console):
 
 ```
 query_match_bacteria	seq_bacteria_1
@@ -112,6 +112,7 @@ results/query1/query1_classification.txt
 # 6. Evaluation
 
 Requires a ground truth file:
+Example:
 
 ```
 query_match_bacteria	seq_bacteria_1
