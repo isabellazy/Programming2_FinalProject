@@ -1,28 +1,41 @@
-# Programming2_FinalProject
+# Multi DB BLAST Classifier
 Link to Project: https://github.com/isabellazy/Programming2_FinalProject
 
 ## Authors: 
-Isabella Zuluaga Yusti - 801427563 - izuluaga@charlotte.edu  
-Candelaria Domingo - 801481207 - cdomingo@charlotte.edu  
-Patrick Bircher - 801490468 - pbircher@charlotte.edu  
+Isabella Zuluaga Yusti - 801427563 - izuluaga@charlotte.edu - isabellazy  
+Candelaria Domingo - 801481207 - cdomingo@charlotte.edu - Sci-Glo  
+Patrick Bircher - 801490468 - pbircher@charlotte.edu - PBircher  
 
 ## Description: 
-This project is designed to evaluate an unknown gene sequence compared to a local BLAST database, return possible sequence matches, and evaluate the strength of those matches
+This project is designed to evaluate an unknown gene sequence compared to a local BLAST database and return possible sequence matches.  
 
-## Proposed Project Structure:  
-  
-multi_db_blast_classifier/     
-|  
-├── main.py  
-├── Format_Library-Patrick  
-&nbsp;&nbsp;&nbsp; ├── config.py  
-&nbsp;&nbsp;&nbsp; ├── database_manager.py  
-├──BLAST_Library-Isabella  
-&nbsp;&nbsp;&nbsp; ├── blast_runner.py  
-├──Evaluation_Library-Candelaria  
-&nbsp;&nbsp;&nbsp; ├── classifier.py  
-&nbsp;&nbsp;&nbsp; ├── evaluation.py  
-└── README.md  
+This project implements a modular bioinformatics pipeline to:
+1. Create local BLAST databases
+2. Run BLAST queries across one or multiple databases
+3. Classify sequences based on BLAST hits
+4. Evaluate classification performance
+
+---
+
+# Project Structure
+
+```
+multi_db_blast_classifier/
+├── main.py
+├── Format_Library-Patrick/
+│   ├── database_manager.py
+│   └── config.py
+├── BLAST_Library-Isabella/
+│   └── blast_runner.py
+├── Evaluation_Library-Candelaria/
+│   ├── classifier.py
+│   ├── evaluation.py
+│   └── results_handler.py
+├── databases/
+├── queries/
+├── results/
+└── README.md
+```
 
 main.py: Entry Point: puts together the entire workflow of the project  
   
