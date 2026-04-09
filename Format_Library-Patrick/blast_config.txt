@@ -1,0 +1,9 @@
+parameter,value
+program,blastn
+evalue,1e-3
+word_size,7
+num_threads,1
+max_target_seqs,10
+perc_identity,0
+query_coverage,0
+dust,no
