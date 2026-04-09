@@ -5,7 +5,7 @@ import os
 import sys
 
 
-def rank_hits(blast_results):
+def rank_hits(blast_results): list[dict]) -> list[dict]:
     """
     Rank BLAST hits across all databases for a single query.
 
@@ -34,21 +34,21 @@ def rank_hits(blast_results):
     # per database; scores from a single database are left as-is.
     from collections import defaultdict
 
-    db_scores = defaultdict(list)
+    db_scores: defaultdict[str, list[float]] = defaultdict(list)
     for hit in blast_results:
         db_scores[hit['db']].append(hit['bitscore'])
 
     db_min = {db: min(scores) for db, scores in db_scores.items()}
     db_max = {db: max(scores) for db, scores in db_scores.items()}
 
-    def normalized_bitscore(hit):
+    def normalized_bitscore(hit: dict) -> float:
         db = hit['db']
         lo, hi = db_min[db], db_max[db]
         if hi == lo:
             return 1.0          # all scores identical — treat as maximum
         return (hit['bitscore'] - lo) / (hi - lo)
 
-    ranked = sorted(
+    ranked: list[dict] = sorted(
         blast_results,
         key=lambda h: (
             -normalized_bitscore(h),   # descending normalized bitscore
@@ -60,7 +60,7 @@ def rank_hits(blast_results):
     return ranked
 
 
-def select_best_hit(blast_results):
+def select_best_hit(blast_results: list[dict]) -> dict | None:
     """
     Select the single best hit for a query from all database results.
 
@@ -74,7 +74,11 @@ def select_best_hit(blast_results):
     return ranked[0] if ranked else None
 
 
-def classify_sequences(all_query_results, evalue_threshold=1e-5, identity_threshold=70.0):
+def classify_sequences(
+    all_query_results: dict[str, list[dict]],
+    evalue_threshold: float = 1e-5,
+    identity_threshold: float = 70.0,
+) -> dict[str, str]:
     """
     Assign a predicted identity/category to every query sequence.
 
@@ -97,17 +101,18 @@ def classify_sequences(all_query_results, evalue_threshold=1e-5, identity_thresh
     >>> classify_sequences(results)
     {'seq1': 'Influenza A', 'seq2': 'Unclassified'}
     """
-    predictions = {}
+    predictions: dict[str, str] = {}
+
 
     for query_id, hits in all_query_results.items():
         # Filter hits that meet quality thresholds
-        acceptable = [
+        acceptable: list[dict] = [
             h for h in hits
             if h.get('evalue', 1.0) <= evalue_threshold
             and h.get('identity', 0.0) >= identity_threshold
         ]
 
-        best = select_best_hit(acceptable)
+        best: dict | None = select_best_hit(acceptable)
 
         if best is None:
             predictions[query_id] = "Unclassified"
@@ -117,7 +122,7 @@ def classify_sequences(all_query_results, evalue_threshold=1e-5, identity_thresh
 
     return predictions
 
-def load_blast_results(results_file):
+def load_blast_results(results_file: str) -> dict[str, list[dict]]:
     """
     Load BLAST results from a text file with this format:
 
@@ -130,8 +135,8 @@ def load_blast_results(results_file):
     if not os.path.isfile(results_file):
         raise FileNotFoundError(f"Results file not found: {results_file}")
 
-    all_query_results = {}
-    current_query = None
+    all_query_results: dict[str, list[dict]] = {}
+    current_query: str | None = None
 
     with open(results_file, "r", encoding="utf-8") as infile:
         for line in infile:
@@ -145,7 +150,7 @@ def load_blast_results(results_file):
                 all_query_results[current_query] = []
                 continue
 
-            parts = line.split("\t")
+            parts: list[str] = line.split("\t")
 
             if len(parts) != 6:
                 continue
@@ -165,6 +170,7 @@ def load_blast_results(results_file):
     return all_query_results
 
 
+
 def classify_results_file(results_file, evalue_threshold=1e-5, identity_threshold=70.0):
     """
     Read a BLAST results file and classify all queries.
@@ -182,8 +188,7 @@ def classify_results_file(results_file, evalue_threshold=1e-5, identity_threshol
 
     return predictions
 
-
-def save_classification_results(predictions, results_file):
+def save_classification_results(predictions: dict[str, str], results_file: str) -> str:
     """
     Save classification results in the same results directory.
 
@@ -211,10 +216,15 @@ def save_classification_results(predictions, results_file):
     return output_file
 
 
-def classify_results_file(results_file, evalue_threshold=1e-5, identity_threshold=70.0, save_output=False):
-    all_query_results = load_blast_results(results_file)
+def classify_results_file(
+    results_file: str,
+    evalue_threshold: float = 1e-5,
+    identity_threshold: float = 70.0,
+    save_output: bool = False,
+) -> dict[str, str]:
+    all_query_results: dict[str, list[dict]] = load_blast_results(results_file)
 
-    predictions = classify_sequences(
+    predictions: dict[str, str] = classify_sequences(
         all_query_results,
         evalue_threshold=evalue_threshold,
         identity_threshold=identity_threshold
