@@ -158,26 +158,3 @@ python3 main.py --evaluate results/q1/q1_classification.txt --ground_truth resul
 ```
 
 ---
-
-# Key Design Decisions
-
-* Modular architecture
-* Separation of concerns:
-
-  * BLAST execution
-  * Classification
-  * Evaluation
-  * Results storage
-* Supports multiple databases
-* Configurable parameters via external file
-
----
-
-# Future Improvements
-
-* Save outputs as CSV
-* Add visualization
-* Automate ground truth generation
-* Support larger datasets
-
----
