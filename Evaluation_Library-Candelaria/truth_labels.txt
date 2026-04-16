@@ -1,3 +1,0 @@
-query_match_bacteria	seq_bacteria_1
-query_match_virus	seq_virus_1
-query_no_match	Unclassified
