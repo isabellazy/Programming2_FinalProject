@@ -1,11 +1,25 @@
 #!/usr/bin/env python3
 #By Candelaria Domingo
 
+"""
+Sequence classification module.
+
+This module is responsible for interpreting BLAST results,
+ranking hits across multiple databases, and assigning a predicted
+identity or category to each query sequence.
+
+Conceptual inputs:
+- BLAST results from multiple databases
+
+Conceptual outputs:
+- Predicted labels or identities for each query sequence
+"""
+
 import os
 import sys
 
 
-def rank_hits(blast_results): list[dict]) -> list[dict]:
+def rank_hits(blast_results: list[dict]) -> list[dict]:
     """
     Rank BLAST hits across all databases for a single query.
 
