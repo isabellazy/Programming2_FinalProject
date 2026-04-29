@@ -1,5 +1,29 @@
 #!/usr/bin/env python3
-#By Isabella Zuluaga Yusti
+# By Isabella Zuluaga Yusti
+
+"""
+main.py
+
+Main entry point for the multi-database BLAST classifier pipeline.
+
+This script coordinates the complete workflow of the project, including:
+- listing available databases
+- downloading NCBI databases
+- creating or reusing local databases
+- loading configuration files
+- running BLAST searches
+- classifying BLAST results
+
+The script acts as the central orchestrator of the pipeline and delegates
+specific tasks to the corresponding modules.
+
+Typical usage:
+    python3 main.py --list_databases
+    python3 main.py --download_ncbi 16S_ribosomal_RNA
+    python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
+    python3 main.py --run_blast --query_file queries/query1.fasta
+    python3 main.py --classify results/query1/query1_results.txt
+"""
 
 import os
 import sys
@@ -11,17 +35,29 @@ sys.path.append(os.path.join(BASE_DIR, "Format_Library-Patrick"))
 sys.path.append(os.path.join(BASE_DIR, "BLAST_Library-Isabella"))
 sys.path.append(os.path.join(BASE_DIR, "Evaluation_Library-Candelaria"))
 
-from database_manager import get_database
+from database_manager import (
+    get_database,
+    download_ncbi_database,
+    get_all_database_paths_by_type,
+    list_databases,
+)
 from config import load_config, print_config
-from blast_runner import run_blast_across_databases
+from file_handler import load_fasta
+from blast_runner import BlastRunner
 from classifier import classify_results_file
-from evaluation import evaluate_classification_file, print_metrics_report
 from results_handler import save_results
 
 
-def parse_args():
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+def parse_args() -> argparse.Namespace:
     """
     Parse command-line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed command-line arguments.
     """
     parser = argparse.ArgumentParser(
         description="Multi-database BLAST classifier"
@@ -78,110 +114,32 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--evaluate",
-        help="Path to a classification results file"
-    )
-
-    parser.add_argument(
-        "--ground_truth",
-        help="Path to the ground truth labels file"
+        "--download_ncbi",
+        help="Download a prebuilt NCBI BLAST database"
     )
 
     return parser.parse_args()
 
 
-def get_all_database_names(databases_dir="databases"):
+# ---------------------------------------------------------------------------
+# Main workflow
+# ---------------------------------------------------------------------------
+
+def main() -> None:
     """
-    Return a list of all available BLAST database names.
+    Main workflow controller for the pipeline.
+
+    This function interprets command-line arguments and routes execution
+    to the appropriate module.
+
+    Supported actions:
+    - list databases
+    - show configuration
+    - download NCBI database
+    - create or reuse local database
+    - run BLAST searches
+    - classify BLAST results
     """
-    if not os.path.isdir(databases_dir):
-        return []
-
-    found_databases = []
-    valid_extensions = (
-        ".nhr", ".nin", ".nsq", ".ndb", ".not", ".ntf", ".nto",
-        ".phr", ".pin", ".psq", ".pdb", ".pot", ".ptf", ".pto"
-    )
-
-    for entry in sorted(os.listdir(databases_dir)):
-        entry_path = os.path.join(databases_dir, entry)
-
-        if not os.path.isdir(entry_path):
-            continue
-
-        has_database_files = False
-
-        for filename in os.listdir(entry_path):
-            if filename.startswith(entry) and filename.endswith(valid_extensions):
-                has_database_files = True
-                break
-
-        if has_database_files:
-            found_databases.append(entry)
-
-    return found_databases
-
-
-def get_all_database_paths(databases_dir="databases"):
-    """
-    Return a list of BLAST database prefix paths.
-    Example:
-    ['databases/db1/db1', 'databases/db2/db2']
-    """
-    database_names = get_all_database_names(databases_dir)
-    return [os.path.join(databases_dir, db_name, db_name) for db_name in database_names]
-
-
-def list_databases(databases_dir="databases"):
-    """
-    List database names found inside the databases directory.
-    """
-    database_names = get_all_database_names(databases_dir)
-
-    if not database_names:
-        sys.stdout.write("No BLAST databases were found.\n")
-        return
-
-    sys.stdout.write("Available BLAST databases:\n")
-    for db_name in database_names:
-        sys.stdout.write(f"{db_name}\n")
-
-
-def load_fasta(file_path):
-    """
-    Load a FASTA file into a dictionary:
-    {sequence_id: sequence}
-    """
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"Query FASTA file not found: {file_path}")
-
-    sequences = {}
-    current_id = None
-    seq_lines = []
-
-    with open(file_path, "r", encoding="utf-8") as fasta_file:
-        for line in fasta_file:
-            line = line.strip()
-
-            if not line:
-                continue
-
-            if line.startswith(">"):
-                if current_id is not None:
-                    sequences[current_id] = "".join(seq_lines)
-
-                current_id = line[1:]
-                seq_lines = []
-            else:
-                seq_lines.append(line)
-
-    if current_id is not None:
-        sequences[current_id] = "".join(seq_lines)
-
-    return sequences
-
-
-def main():
     args = parse_args()
 
     if args.list_databases:
@@ -193,17 +151,9 @@ def main():
         print_config(config)
         return
 
-    if args.evaluate:
-        if not args.ground_truth:
-            sys.stderr.write("Error: --evaluate requires --ground_truth.\n")
-            sys.exit(1)
-
-        metrics = evaluate_classification_file(
-            classification_file=args.evaluate,
-            ground_truth_file=args.ground_truth
-        )
-
-        print_metrics_report(metrics, title="Evaluation Report")
+    if args.download_ncbi:
+        db_path = download_ncbi_database(args.download_ncbi)
+        sys.stdout.write(f"Downloaded database ready: {db_path}\n")
         return
 
     if args.classify:
@@ -251,16 +201,25 @@ def main():
         if args.db_name:
             databases = [os.path.join("databases", args.db_name, args.db_name)]
         else:
-            databases = get_all_database_paths()
+            program = str(config.get("program", "blastn")).lower()
+
+            if program == "blastn":
+                databases = get_all_database_paths_by_type("nucl")
+            elif program == "blastp":
+                databases = get_all_database_paths_by_type("prot")
+            else:
+                sys.stderr.write(f"Error: Unsupported BLAST program '{program}'.\n")
+                sys.exit(1)
 
         if not databases:
             sys.stderr.write("Error: No BLAST databases available.\n")
             sys.exit(1)
 
-        blast_results = run_blast_across_databases(
+        runner = BlastRunner(config)
+
+        blast_results = runner.run_blast_across_databases(
             query_sequences=queries,
-            databases=databases,
-            blast_params=config
+            databases=databases
         )
 
         save_results(blast_results, args.query_file)
@@ -271,10 +230,10 @@ def main():
         "Use one of the following options:\n"
         "  --list_databases\n"
         "  --show_config [--config <file>]\n"
+        "  --download_ncbi <db_name>\n"
         "  --db_name <name> --fasta_file <file> --db_type <nucl|prot>\n"
         "  --run_blast --query_file <file> [--db_name <name>] [--config <file>]\n"
         "  --classify <results_file> [--config <file>]\n"
-        "  --evaluate <classification_file> --ground_truth <truth_file>\n"
     )
 
 
