@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# By Patrick Bircher + merged with functional pipeline version
+# By Patrick Bircher
 
 """
 database_manager.py
@@ -43,13 +43,10 @@ import urllib.request
 
 NCBI_DATABASES: dict[str, dict[str, str]] = {
     # Nucleotide
-    "nt":                {"type": "nucl", "description": "NCBI nucleotide collection (broad first-pass screening)"},
     "refseq_rna":        {"type": "nucl", "description": "NCBI RefSeq RNA sequences"},
-    "refseq_select":     {"type": "nucl", "description": "High-quality curated RefSeq subset"},
     "16S_ribosomal_RNA": {"type": "nucl", "description": "16S rRNA (bacterial species ID)"},
     "patnt":             {"type": "nucl", "description": "Patent nucleotide sequences"},
     # Protein
-    "nr":                {"type": "prot", "description": "NCBI non-redundant protein collection"},
     "swissprot":         {"type": "prot", "description": "UniProt/Swiss-Prot curated proteins"},
     "pataa":             {"type": "prot", "description": "Patent protein sequences"},
 }
@@ -603,6 +600,39 @@ class DatabaseManager:
         """
         database_names = self.get_all_database_names()
         return [os.path.join(self.download_dir, db_name, db_name) for db_name in database_names]
+    
+    def get_all_database_paths_by_type(self, db_type: str) -> list[str]:
+        """
+        Return database prefix paths filtered by database type.
+
+        Args:
+            db_type (str): 'nucl'/'nucleotide' or 'prot'/'protein'
+
+        Returns:
+            list[str]: List of matching database prefix paths.
+        """
+        db_type_flag = self._normalize_db_type(db_type)
+        matching_paths: list[str] = []
+
+        if not os.path.isdir(self.download_dir):
+            return matching_paths
+
+        for entry in sorted(os.listdir(self.download_dir)):
+            entry_path = os.path.join(self.download_dir, entry)
+
+            if not os.path.isdir(entry_path):
+                continue
+
+            db_prefix = os.path.join(entry_path, entry)
+
+            if self._db_exists(db_prefix, db_type_flag):
+                matching_paths.append(db_prefix)
+                continue
+
+            if self._downloaded_db_exists(entry, db_type_flag, entry_path):
+                matching_paths.append(db_prefix)
+
+        return matching_paths
 
     def list_databases(self) -> None:
         """
@@ -678,6 +708,15 @@ def get_all_database_paths(download_dir: str = "databases") -> list[str]:
     Module-level wrapper around DatabaseManager.get_all_database_paths.
     """
     return DatabaseManager(download_dir=download_dir).get_all_database_paths()
+
+def get_all_database_paths_by_type(
+    db_type: str,
+    download_dir: str = "databases"
+) -> list[str]:
+    """
+    Module-level wrapper around DatabaseManager.get_all_database_paths_by_type.
+    """
+    return DatabaseManager(download_dir=download_dir).get_all_database_paths_by_type(db_type)
 
 
 def list_databases(download_dir: str = "databases") -> None:
