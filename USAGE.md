@@ -24,8 +24,18 @@ db2
 ```
 
 ---
+# 2. Download an NCBI Database
 
-# 2. Create or Use a Database
+```bash
+python3 main.py --download_ncbi 16S_ribosomal_RNA
+```
+This will:
+
+* Create databases/16S_ribosomal_RNA/
+* Download the database from NCBI
+* Extract all BLAST files inside that folder
+---
+# 3. Create or Use a Database
 
 ```bash
 python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
@@ -39,7 +49,7 @@ This will:
 
 ---
 
-# 3. View Configuration
+# 4. View Configuration
 
 ```bash
 python3 main.py --show_config
@@ -53,7 +63,7 @@ python3 main.py --show_config --config my_config.txt
 
 ---
 
-# 4. Run BLAST
+# 5. Run BLAST
 
 ## Run against one database
 
@@ -109,41 +119,13 @@ results/query1/query1_classification.txt
 
 ---
 
-# 6. Evaluation
-
-Requires a ground truth file:
-Example:
-
-```
-query_match_bacteria	seq_bacteria_1
-query_match_virus	seq_virus_1
-query_no_match	Unclassified
-```
-
-Run:
-
-```bash
-python3 main.py --evaluate results/query1/query1_classification.txt --ground_truth Evaluation_Library-Candelaria/truth_labels.txt
-```
-
----
-
-# Example Evaluation Output
-
-```
-=======================================================
-  Classification Report
-=======================================================
-  Overall accuracy : 0.6667 (2/3)
-  Macro F1         : 0.6667
-  Weighted F1      : 0.6667
-```
-
----
-
 # Full Pipeline Example
 
 ```bash
+
+# Download NCBI database
+python3 main.py --download_ncbi 16S_ribosomal_RNA
+
 # Create database
 python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
 
@@ -153,8 +135,6 @@ python3 main.py --run_blast --query_file queries/query1.fasta
 # Classify
 python3 main.py --classify results/query1/query1_results.txt
 
-# Evaluate
-python3 main.py --evaluate results/query1/query1_classification.txt --ground_truth Evaluation_Library-Candelaria/truth_labels.txt
 ```
 
 ---
