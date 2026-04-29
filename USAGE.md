@@ -3,7 +3,7 @@
 Make sure BLAST+ is installed:
 
 ```bash
-conda create -n python_project -c conda-forge -c bioconda blast
+conda create -n python_project -c conda-forge -c bioconda blast curl
 conda activate python_project
 ```
 
