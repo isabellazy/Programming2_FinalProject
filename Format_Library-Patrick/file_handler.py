@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# By Patrick Bircher
+# By Isabella Zuluaga
 
 """
 file_handler.py
