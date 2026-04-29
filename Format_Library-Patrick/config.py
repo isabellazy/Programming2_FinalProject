@@ -1,6 +1,28 @@
 #!/usr/bin/env python3
 #By Patrick Bircher
 
+"""
+config.py
+
+Handles configuration loading for the pipeline.
+
+Currently supports:
+- reading BLAST parameter settings from a configuration text file
+- converting configuration entries into a Python dictionary
+- printing loaded configuration values
+
+This module is intended for centralized configuration management so the
+pipeline can be controlled without changing the source code.
+
+Functions:
+    load_config: Load configuration values from a text file.
+    print_config: Print configuration values in a readable format.
+
+Typical usage:
+    config = load_config("Format_Library-Patrick/blast_config.txt")
+    print_config(config)
+"""
+
 import pandas as pd
 import sys
 
