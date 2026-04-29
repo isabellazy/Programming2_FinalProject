@@ -1,6 +1,24 @@
 #!/usr/bin/env python3
 #By Isabella Zuluaga
 
+"""
+results_handler.py
+
+Handles output file generation for the pipeline.
+
+Currently supports:
+- saving BLAST results into the results/ directory
+
+This module is intended for writing pipeline outputs in a consistent format
+so they can be reused by later stages such as classification.
+
+Functions:
+    save_results: Save BLAST results to a structured output file.
+
+Typical usage:
+    save_results(blast_results, "queries/query1.fasta")
+"""
+
 import os
 import shutil
 import sys
