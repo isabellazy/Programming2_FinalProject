@@ -26,12 +26,13 @@ multi_db_blast_classifier/
 ├── main.py
 ├── Format_Library-Patrick/
 │   ├── database_manager.py
+│   │── file_handler.py
+│   │── blast_config.txt
 │   └── config.py
 ├── BLAST_Library-Isabella/
 │   └── blast_runner.py
 ├── Evaluation_Library-Candelaria/
 │   ├── classifier.py
-│   ├── evaluation.py
 │   └── results_handler.py
 ├── databases/
 ├── queries/
@@ -40,11 +41,14 @@ multi_db_blast_classifier/
 ```
 
 - main.py: Entry Point: puts together the entire workflow of the project  
-- database_manager.py: Local BLAST Databases: creating, validating, and managing local BLAST databases  
+- database_manager.py: Local BLAST Databases: creating, validating, managing local BLAST databases, and downloading supported NCBI BLAST databases  
 - config.py: Centralized Configuration: defines all global configuration values used across the project  
-- blast_runner.py: Running BLAST Searches: running BLAST searches for query sequences against multiple local databases and collecting the raw results  
-- classifier.py: Selecting the Best Hit: interpreting BLAST results and ranking hits across multiple databases  
-- evaluation.py: Accuracy & Performance: measures classification accuracy using known sequences  
+- blast_config.txt: Configuration File: stores BLAST parameters such as program, e-value, word size, and other options  
+- file_handler.py: Input File Handling: loads FASTA query files into dictionaries for the pipeline  
+- blast_runner.py: Running BLAST Searches: runs BLAST searches for query sequences against multiple local databases and collects the raw results using the BlastRunner class  
+- classifier.py: Selecting the Best Hit: interprets BLAST results and ranks hits across multiple databases  
+- results_handler.py: Results Output Management: saves BLAST search results into the structured results/ directory  
+
 
 ---
 
