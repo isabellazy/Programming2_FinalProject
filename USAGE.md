@@ -6,6 +6,11 @@ Make sure BLAST+ is installed:
 conda create -n python_project -c conda-forge -c bioconda blast curl
 conda activate python_project
 ```
+---
+# Gives permissions to the run_test.sh
+```bash
+chmod +x run_test.sh
+```
 
 ---
 
