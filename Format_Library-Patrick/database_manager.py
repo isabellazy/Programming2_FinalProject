@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# By Patrick Bircher
+# By Patrick Bircher + merged with functional pipeline version
 
 """
 database_manager.py
@@ -8,14 +8,25 @@ Manages local BLAST databases — either by downloading prebuilt databases
 directly from the NCBI FTP server, or by building custom databases from
 local FASTA files using makeblastdb.
 
+This merged version keeps:
+- the class-based design for structure and extensibility
+- the function-based wrappers used by main.py
+- the practical project workflow:
+    * create databases inside databases/<db_name>/
+    * move FASTA files into the database directory
+    * reuse existing databases if already present
+    * download NCBI databases into their own folders
+    * support both single-part and multi-part NCBI BLAST databases
+
 Classes:
-    DatabaseManager: Handles all database creation, retrieval, and downloading.
+    DatabaseManager: Handles database creation, retrieval, and downloading.
 
 Typical usage:
     manager = DatabaseManager()
-    db_path = manager.download_ncbi("16S_ribosomal_RNA")
-    db_path = manager.create_from_fasta("seqs.fasta", "my_db", "nucleotide")
     db_path = manager.get_database("seqs.fasta", "my_db", "nucleotide")
+
+Functional usage:
+    db_path = get_database("seqs.fasta", "my_db", "nucleotide")
 """
 
 import os
@@ -24,7 +35,6 @@ import subprocess
 import sys
 import tarfile
 import urllib.request
-from typing import Optional
 
 
 # ---------------------------------------------------------------------------
@@ -60,8 +70,10 @@ class DatabaseManager:
     """
     Manages local BLAST databases.
 
-    Supports downloading prebuilt NCBI databases and building custom
-    databases from local FASTA files using makeblastdb.
+    Supports:
+    - downloading prebuilt NCBI databases
+    - building custom databases from local FASTA files using makeblastdb
+    - reusing existing local databases when they already exist
 
     Attributes:
         download_dir (str): Directory where databases are stored.
@@ -131,7 +143,7 @@ class DatabaseManager:
 
     def _db_exists(self, db_prefix: str, db_type_flag: str) -> bool:
         """
-        Check whether all expected database files exist on disk.
+        Check whether the BLAST database files exist on disk.
 
         Args:
             db_prefix (str):    Full path prefix of the database
@@ -139,10 +151,10 @@ class DatabaseManager:
             db_type_flag (str): Normalized database type, 'nucl' or 'prot'.
 
         Returns:
-            bool: True if all expected files are present, False otherwise.
+            bool: True if the database is present, False otherwise.
         """
         extensions = self._get_extensions(db_type_flag)
-        return all(os.path.exists(db_prefix + ext) for ext in extensions)
+        return any(os.path.exists(db_prefix + ext) for ext in extensions)
 
     def _db_prefix(self, db_name: str) -> tuple[str, str]:
         """
@@ -177,6 +189,203 @@ class DatabaseManager:
             mb_total = total_size / 1_000_000
             sys.stdout.write(f"\r  {percent:.1f}%  {mb_done:.1f} / {mb_total:.1f} MB")
             sys.stdout.flush()
+
+    def _downloaded_db_exists(self, db_name: str, db_type_flag: str, db_dir: str) -> bool:
+        """
+        Check whether a downloaded NCBI BLAST database exists.
+
+        Supports alias files (.nal/.pal) and multi-volume database files.
+
+        Args:
+            db_name (str): Database name.
+            db_type_flag (str): Normalized database type, 'nucl' or 'prot'.
+            db_dir (str): Directory where the downloaded database is stored.
+
+        Returns:
+            bool: True if downloaded BLAST files are detected, False otherwise.
+        """
+        if not os.path.isdir(db_dir):
+            return False
+
+        files = os.listdir(db_dir)
+
+        if db_type_flag == "nucl":
+            if f"{db_name}.nal" in files:
+                return True
+
+            for filename in files:
+                if filename.startswith(f"{db_name}.") and (
+                    filename.endswith(".nhr") or
+                    filename.endswith(".nin") or
+                    filename.endswith(".nsq") or
+                    filename.endswith(".ndb") or
+                    filename.endswith(".not") or
+                    filename.endswith(".ntf") or
+                    filename.endswith(".nto")
+                ):
+                    return True
+
+        else:
+            if f"{db_name}.pal" in files:
+                return True
+
+            for filename in files:
+                if filename.startswith(f"{db_name}.") and (
+                    filename.endswith(".phr") or
+                    filename.endswith(".pin") or
+                    filename.endswith(".psq") or
+                    filename.endswith(".pdb") or
+                    filename.endswith(".pot") or
+                    filename.endswith(".ptf") or
+                    filename.endswith(".pto")
+                ):
+                    return True
+
+        return False
+
+    def _url_exists(self, url: str) -> bool:
+        """
+        Check whether a remote URL exists.
+
+        Uses curl if available, otherwise urllib.
+
+        Args:
+            url (str): URL to test.
+
+        Returns:
+            bool: True if the URL exists, False otherwise.
+        """
+        try:
+            if shutil.which("curl"):
+                cmd = ["curl", "-I", "-L", "-s", url]
+                result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                return "200 OK" in result.stdout
+            else:
+                request = urllib.request.Request(url, method="HEAD")
+                with urllib.request.urlopen(request):
+                    return True
+        except Exception:
+            return False
+
+    def _download_archive(self, url: str, archive_path: str) -> None:
+        """
+        Download one archive file using curl if available, otherwise urllib.
+
+        Args:
+            url (str): Remote file URL.
+            archive_path (str): Local output path.
+
+        Raises:
+            RuntimeError: If the download fails.
+        """
+        sys.stdout.write(f"Fetching: {url}\n")
+
+        try:
+            if shutil.which("curl"):
+                sys.stdout.write("Using curl for download.\n")
+                cmd = ["curl", "-L", url, "-o", archive_path]
+                result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+
+                if result.returncode != 0:
+                    raise RuntimeError(
+                        f"curl download failed with return code {result.returncode}.\n"
+                        f"STDOUT:\n{result.stdout}\n"
+                        f"STDERR:\n{result.stderr}"
+                    )
+            else:
+                sys.stdout.write("Using urllib for download.\n")
+                urllib.request.urlretrieve(
+                    url,
+                    archive_path,
+                    reporthook=self._download_progress
+                )
+                sys.stdout.write("\n")
+
+        except Exception as e:
+            raise RuntimeError(
+                "Download failed. Python SSL may not trust the certificate chain in this environment.\n"
+                "A curl-based download is recommended on this system.\n"
+                f"Original error: {e}"
+            )
+
+    def _extract_archive(self, archive_path: str, db_dir: str) -> None:
+        """
+        Extract one .tar.gz archive into the database directory.
+
+        Args:
+            archive_path (str): Path to archive file.
+            db_dir (str): Target extraction directory.
+
+        Raises:
+            RuntimeError: If extraction fails.
+        """
+        try:
+            with tarfile.open(archive_path, "r:gz") as tar:
+                tar.extractall(path=db_dir)
+        except Exception as e:
+            raise RuntimeError(f"Extraction failed for '{archive_path}': {e}")
+
+    def _download_singlepart_database(self, db_name: str, db_dir: str) -> None:
+        """
+        Download and extract a single-part NCBI BLAST database archive.
+
+        Args:
+            db_name (str): Database name.
+            db_dir (str): Local database directory.
+        """
+        filename = f"{db_name}.tar.gz"
+        url = f"{NCBI_FTP_BASE_URL}/{filename}"
+        archive_path = os.path.join(db_dir, filename)
+
+        self._download_archive(url, archive_path)
+        sys.stdout.write(f"Extracting '{filename}' into '{db_dir}'...\n")
+        self._extract_archive(archive_path, db_dir)
+        os.remove(archive_path)
+        sys.stdout.write(f"Cleaned up '{filename}'.\n")
+
+    def _download_multipart_database(self, db_name: str, db_dir: str) -> None:
+        """
+        Download and extract a multi-part NCBI BLAST database.
+
+        Example:
+            refseq_rna.00.tar.gz
+            refseq_rna.01.tar.gz
+            ...
+
+        Args:
+            db_name (str): Database name.
+            db_dir (str): Local database directory.
+
+        Raises:
+            RuntimeError: If no parts are found.
+        """
+        part_index = 0
+        downloaded_any = False
+
+        while True:
+            part_name = f"{db_name}.{part_index:02d}.tar.gz"
+            url = f"{NCBI_FTP_BASE_URL}/{part_name}"
+
+            if not self._url_exists(url):
+                if part_index == 0:
+                    raise RuntimeError(
+                        f"No single-part or multi-part archives were found for database '{db_name}'."
+                    )
+                break
+
+            archive_path = os.path.join(db_dir, part_name)
+
+            self._download_archive(url, archive_path)
+            sys.stdout.write(f"Extracting '{part_name}' into '{db_dir}'...\n")
+            self._extract_archive(archive_path, db_dir)
+            os.remove(archive_path)
+            sys.stdout.write(f"Cleaned up '{part_name}'.\n")
+
+            downloaded_any = True
+            part_index += 1
+
+        if not downloaded_any:
+            raise RuntimeError(f"No archive parts were downloaded for '{db_name}'.")
 
     # -----------------------------------------------------------------------
     # Public methods
@@ -239,15 +448,15 @@ class DatabaseManager:
 
         cmd: list[str] = [
             "makeblastdb",
-            "-in",     new_fasta_path,
+            "-in", new_fasta_path,
             "-dbtype", db_type_flag,
-            "-out",    db_prefix,
+            "-out", db_prefix,
         ]
 
         sys.stdout.write(
             f"Creating BLAST database '{db_name}' from '{new_fasta_path}'...\n"
         )
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
 
         if result.returncode != 0:
             raise RuntimeError(
@@ -291,22 +500,19 @@ class DatabaseManager:
         sys.stdout.write(f"BLAST database '{db_name}' not found. Creating now...\n")
         return self.create_from_fasta(fasta_path, db_name, db_type)
 
-    def download_ncbi(
-        self,
-        db_name: str,
-        download_dir: Optional[str] = None,
-    ) -> str:
+    def download_ncbi(self, db_name: str) -> str:
         """
         Download a prebuilt NCBI BLAST database from the NCBI FTP server.
 
-        Downloads the compressed archive, extracts it, and removes the
-        archive file. Skips download if the database already exists.
+        The downloaded database is always stored inside:
+            databases/<db_name>/
+
+        Supports:
+        - single-part archives: db_name.tar.gz
+        - multi-part archives: db_name.00.tar.gz, db_name.01.tar.gz, ...
 
         Args:
-            db_name (str):           Name of the NCBI database to download.
-                                     Must be a key in NCBI_DATABASES.
-            download_dir (str|None): Directory to store the database.
-                                     Defaults to self.download_dir.
+            db_name (str): Name of the NCBI database to download.
 
         Returns:
             str: Path prefix of the downloaded BLAST database.
@@ -315,10 +521,6 @@ class DatabaseManager:
             ValueError:   If db_name is not a recognized NCBI database.
             RuntimeError: If the download or extraction fails, or if
                           expected files are missing after extraction.
-
-        Available databases:
-            Nucleotide: nt, refseq_rna, refseq_select, 16S_ribosomal_RNA, patnt
-            Protein:    nr, swissprot, pataa
         """
         if db_name not in NCBI_DATABASES:
             valid = "\n  ".join(
@@ -328,62 +530,93 @@ class DatabaseManager:
                 f"Unknown database '{db_name}'. Available databases:\n  {valid}"
             )
 
-        target_dir = download_dir or self.download_dir
+        db_dir, db_prefix = self._db_prefix(db_name)
         db_info = NCBI_DATABASES[db_name]
         db_type_flag: str = db_info["type"]
 
-        os.makedirs(target_dir, exist_ok=True)
-        db_prefix = os.path.join(target_dir, db_name)
+        os.makedirs(db_dir, exist_ok=True)
 
-        if self._db_exists(db_prefix, db_type_flag):
+        if self._downloaded_db_exists(db_name, db_type_flag, db_dir):
             sys.stdout.write(
-                f"Database '{db_name}' already exists in '{target_dir}'. "
-                "Skipping download.\n"
+                f"Database '{db_name}' already exists in '{db_dir}'. Skipping download.\n"
             )
             return db_prefix
 
         sys.stdout.write(
             f"Downloading '{db_name}' ({db_info['description']}) from NCBI FTP...\n"
         )
-        if db_name in ("nt", "nr"):
+
+        if db_name in ("nt", "nr", "refseq_rna"):
             sys.stdout.write(
-                "Note: 'nt' and 'nr' are 100GB+. This may take a very long time.\n"
+                "Note: this database may be very large and may require multiple downloads.\n"
             )
 
-        filename: str = f"{db_name}.tar.gz"
-        url: str = f"{NCBI_FTP_BASE_URL}/{filename}"
-        archive_path: str = os.path.join(target_dir, filename)
+        single_url = f"{NCBI_FTP_BASE_URL}/{db_name}.tar.gz"
 
-        # Step 1: Download
-        sys.stdout.write(f"Fetching: {url}\n")
-        try:
-            urllib.request.urlretrieve(url, archive_path, reporthook=self._download_progress)
-            sys.stdout.write("\n")
-        except Exception as e:
-            raise RuntimeError(f"Download failed: {e}")
+        if self._url_exists(single_url):
+            self._download_singlepart_database(db_name, db_dir)
+        else:
+            self._download_multipart_database(db_name, db_dir)
 
-        # Step 2: Extract
-        sys.stdout.write(f"Extracting '{filename}'...\n")
-        try:
-            with tarfile.open(archive_path, "r:gz") as tar:
-                tar.extractall(path=target_dir)
-        except Exception as e:
-            raise RuntimeError(f"Extraction failed: {e}")
-
-        # Step 3: Clean up archive
-        os.remove(archive_path)
-        sys.stdout.write(f"Cleaned up '{filename}'.\n")
-
-        # Step 4: Verify
-        if not self._db_exists(db_prefix, db_type_flag):
-            extracted = os.listdir(target_dir)
+        if not self._downloaded_db_exists(db_name, db_type_flag, db_dir):
+            extracted = os.listdir(db_dir)
             raise RuntimeError(
                 f"Extraction succeeded but expected database files not found.\n"
-                f"Files in '{target_dir}': {extracted}"
+                f"Files in '{db_dir}': {extracted}"
             )
 
         sys.stdout.write(f"Database '{db_name}' ready at '{db_prefix}'.\n")
         return db_prefix
+
+    def get_all_database_names(self) -> list[str]:
+        """
+        Return a list of all available BLAST database names in self.download_dir.
+        """
+        if not os.path.isdir(self.download_dir):
+            return []
+
+        found_databases: list[str] = []
+
+        for entry in sorted(os.listdir(self.download_dir)):
+            entry_path = os.path.join(self.download_dir, entry)
+
+            if not os.path.isdir(entry_path):
+                continue
+
+            nucl_exists = self._db_exists(os.path.join(entry_path, entry), "nucl")
+            prot_exists = self._db_exists(os.path.join(entry_path, entry), "prot")
+
+            if nucl_exists or prot_exists:
+                found_databases.append(entry)
+                continue
+
+            if self._downloaded_db_exists(entry, "nucl", entry_path) or self._downloaded_db_exists(entry, "prot", entry_path):
+                found_databases.append(entry)
+
+        return found_databases
+
+    def get_all_database_paths(self) -> list[str]:
+        """
+        Return a list of BLAST database prefix paths.
+        Example:
+        ['databases/db1/db1', 'databases/db2/db2']
+        """
+        database_names = self.get_all_database_names()
+        return [os.path.join(self.download_dir, db_name, db_name) for db_name in database_names]
+
+    def list_databases(self) -> None:
+        """
+        Print all available BLAST database names.
+        """
+        database_names = self.get_all_database_names()
+
+        if not database_names:
+            sys.stdout.write("No BLAST databases were found.\n")
+            return
+
+        sys.stdout.write("Available BLAST databases:\n")
+        for db_name in database_names:
+            sys.stdout.write(f"{db_name}\n")
 
 
 # ---------------------------------------------------------------------------
@@ -420,34 +653,35 @@ def get_database(fasta_path: str, db_name: str, db_type: str) -> str:
     return DatabaseManager().get_database(fasta_path, db_name, db_type)
 
 
-def download_ncbi_database(db_name: str, download_dir: str = "databases") -> str:
+def download_ncbi_database(db_name: str) -> str:
     """
     Module-level wrapper around DatabaseManager.download_ncbi.
 
     Args:
-        db_name (str):      Name of the NCBI database to download.
-        download_dir (str): Directory to store the database. Defaults to 'databases'.
+        db_name (str): Name of the NCBI database to download.
 
     Returns:
         str: Path prefix of the downloaded BLAST database.
     """
-    return DatabaseManager(download_dir=download_dir).download_ncbi(db_name)
+    return DatabaseManager().download_ncbi(db_name)
 
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
+def get_all_database_names(download_dir: str = "databases") -> list[str]:
+    """
+    Module-level wrapper around DatabaseManager.get_all_database_names.
+    """
+    return DatabaseManager(download_dir=download_dir).get_all_database_names()
 
-if __name__ == "__main__":
-    manager = DatabaseManager()
- 
-    # Download a prebuilt NCBI database
-    db_path = manager.download_ncbi("16S_ribosomal_RNA")
- 
-    # Build from a local FASTA file
-    # db_path = manager.create_from_fasta("my_sequences.fasta", "my_db", "nucleotide")
- 
-    # Use existing or create if missing
-    # db_path = manager.get_database("my_sequences.fasta", "my_db", "nucleotide")
- 
-    print(f"Database ready at: {db_path}")
+
+def get_all_database_paths(download_dir: str = "databases") -> list[str]:
+    """
+    Module-level wrapper around DatabaseManager.get_all_database_paths.
+    """
+    return DatabaseManager(download_dir=download_dir).get_all_database_paths()
+
+
+def list_databases(download_dir: str = "databases") -> None:
+    """
+    Module-level wrapper around DatabaseManager.list_databases.
+    """
+    DatabaseManager(download_dir=download_dir).list_databases()
