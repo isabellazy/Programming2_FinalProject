@@ -37,6 +37,7 @@ multi_db_blast_classifier/
 ├── databases/
 ├── queries/
 ├── results/
+├── run_test.sh
 └── README.md
 ```
 
