@@ -15,7 +15,6 @@ This project implements a modular bioinformatics pipeline to:
 1. Create local BLAST databases
 2. Run BLAST queries across one or multiple databases
 3. Classify sequences based on BLAST hits
-4. Evaluate classification performance
 
 ---
 
