@@ -35,6 +35,7 @@ import subprocess
 import sys
 import tarfile
 import urllib.request
+import re
 
 
 # ---------------------------------------------------------------------------
@@ -52,8 +53,15 @@ NCBI_DATABASES: dict[str, dict[str, str]] = {
 }
 
 # File extensions for nucleotide and protein BLAST databases
-NUCL_EXTENSIONS: list[str] = [".nhr", ".nin", ".nsq", ".ndb", ".not", ".ntf", ".nto"]
-PROT_EXTENSIONS: list[str] = [".phr", ".pin", ".psq", ".pdb", ".pot", ".ptf", ".pto"]
+NUCL_EXTENSIONS: list[str] = [
+    ".nhr", ".nin", ".nsq", ".ndb", ".not", ".ntf", ".nto",
+    ".nog", ".nos", ".njs", ".nsi", ".nsd"
+]
+
+PROT_EXTENSIONS: list[str] = [
+    ".phr", ".pin", ".psq", ".pdb", ".pot", ".ptf", ".pto",
+    ".ppi", ".ppd", ".pjs", ".pog", ".pos"
+]
 
 # Base URL for NCBI BLAST database FTP downloads
 NCBI_FTP_BASE_URL: str = "https://ftp.ncbi.nlm.nih.gov/blast/db"
@@ -191,7 +199,10 @@ class DatabaseManager:
         """
         Check whether a downloaded NCBI BLAST database exists.
 
-        Supports alias files (.nal/.pal) and multi-volume database files.
+        Supports:
+        - alias files (.nal/.pal)
+        - single-volume BLAST files (e.g. swissprot.phr)
+        - multi-volume BLAST files (e.g. nt.000.nhr)
 
         Args:
             db_name (str): Database name.
@@ -207,38 +218,18 @@ class DatabaseManager:
         files = os.listdir(db_dir)
 
         if db_type_flag == "nucl":
-            if f"{db_name}.nal" in files:
-                return True
-
-            for filename in files:
-                if filename.startswith(f"{db_name}.") and (
-                    filename.endswith(".nhr") or
-                    filename.endswith(".nin") or
-                    filename.endswith(".nsq") or
-                    filename.endswith(".ndb") or
-                    filename.endswith(".not") or
-                    filename.endswith(".ntf") or
-                    filename.endswith(".nto")
-                ):
-                    return True
-
+            alias_ext = "nal"
+            extensions = [ext.lstrip(".") for ext in NUCL_EXTENSIONS]
         else:
-            if f"{db_name}.pal" in files:
-                return True
+            alias_ext = "pal"
+            extensions = [ext.lstrip(".") for ext in PROT_EXTENSIONS]
 
-            for filename in files:
-                if filename.startswith(f"{db_name}.") and (
-                    filename.endswith(".phr") or
-                    filename.endswith(".pin") or
-                    filename.endswith(".psq") or
-                    filename.endswith(".pdb") or
-                    filename.endswith(".pot") or
-                    filename.endswith(".ptf") or
-                    filename.endswith(".pto")
-                ):
-                    return True
+        ext_pattern = "|".join(re.escape(ext) for ext in extensions)
 
-        return False
+        pattern = rf"^{re.escape(db_name)}(\.{alias_ext}|\.(?:{ext_pattern})|\.\d+\.(?:{ext_pattern}))$"
+        regex = re.compile(pattern)
+
+        return any(regex.match(filename) for filename in files)
 
     def _url_exists(self, url: str) -> bool:
         """
