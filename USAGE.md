@@ -3,13 +3,23 @@
 Make sure BLAST+ is installed:
 
 ```bash
-conda create -n python_project -c conda-forge -c bioconda blast curl
-conda activate python_project
+conda create -n project_py -c conda-forge -c bioconda blast curl
+conda activate project_py
+```
+
+Or create the enviroment using the yml 
+
+```bash
+conda env create -f environment.yml
+conda activate project_py
 ```
 ---
-# Gives permissions to the run_test.sh
+# Gives permissions to the run_test.sh and run_test.sh 
+You can run the test and this will unzip the H1N1 zip, create a database based on the fasta file, run blast againts a H1N1 Unknow query file  and classify it.
+
 ```bash
 chmod +x run_test.sh
+./run_test.sh 
 ```
 
 ---
@@ -43,7 +53,7 @@ This will:
 # 3. Create or Use a Database
 
 ```bash
-python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
+python3 main.py --db_name H1N1 --fasta_file databases/H1N1_2025.fasta --db_type nucl
 ```
 
 This will:
@@ -73,13 +83,13 @@ python3 main.py --show_config --config my_config.txt
 ## Run against one database
 
 ```bash
-python3 main.py --run_blast --db_name db1 --query_file queries/query1.fasta
+python3 main.py --run_blast --db_name 16S_ribosomal_RNA --query_file queries/16S_Unknown.fasta
 ```
 
 ## Run against ALL databases
 
 ```bash
-python3 main.py --run_blast --query_file queries/query1.fasta
+python3 main.py --run_blast --query_file queries/16S_Unknown.fasta
 ```
 
 ---
@@ -88,8 +98,8 @@ python3 main.py --run_blast --query_file queries/query1.fasta
 
 ```
 results/
-└── q1/
-    └── q1_results.txt
+└── 16S_Unknown/
+    └── 16S_Unknown_results.txt
 ```
 
 ---
@@ -98,7 +108,8 @@ results/
 
 ```
 Query: query_match_bacteria
-db1	seq_bacteria_1	100.0	35	5.41e-17	65.8
+database                subject_id      identity        alignment_length        evalue      bitscore
+16S_ribosomal_RNA       NR_156073.1     96.552          87                      2.67e-34    145.0
 ```
 
 ---
@@ -106,20 +117,21 @@ db1	seq_bacteria_1	100.0	35	5.41e-17	65.8
 # 5. Classification
 
 ```bash
-python3 main.py --classify results/query1/query1_results.txt
+python3 main.py --classify results/16S_Unknown/16S_Unknown_results.txt
 ```
 
 Example Output (console):
 
 ```
-query_match_bacteria	seq_bacteria_1
-query_match_virus	seq_virus_1
+H1N1_Unknown_1  H1N1_25|EPI_ISL_19689994
+H1N1_Unknown_2  H1N1_25|EPI_ISL_19776670
+H1N1_Unknown_3  H1N1_25|EPI_ISL_19786505
 ```
 
 Also generates:
 
 ```
-results/query1/query1_classification.txt
+results/H1N1_Unknown/H1N1_Unknown_classification.txt
 ```
 
 ---
@@ -132,13 +144,13 @@ results/query1/query1_classification.txt
 python3 main.py --download_ncbi 16S_ribosomal_RNA
 
 # Create database
-python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
+python3 main.py --db_name H1N1 --fasta_file databases/H1N1_2025.fasta --db_type nucl
 
 # Run BLAST
-python3 main.py --run_blast --query_file queries/query1.fasta
+python3 main.py --run_blast --query_file queries/16S_Unknown.fasta
 
 # Classify
-python3 main.py --classify results/query1/query1_results.txt
+python3 main.py --classify results/16S_Unknown/16S_Unknown_results.txt
 
 ```
 
