@@ -1,11 +1,4 @@
 # Multi DB BLAST Classifier
-Link to Project: https://github.com/isabellazy/Programming2_FinalProject
-
-## Authors: 
-Isabella Zuluaga Yusti - 801427563 - izuluaga@charlotte.edu - isabellazy  
-Candelaria Domingo - 801481207 - cdomingo@charlotte.edu - Sci-Glo  
-Patrick Bircher - 801490468 - pbircher@charlotte.edu - PBircher  
-
 ---
 
 ## Description: 
@@ -49,11 +42,41 @@ multi_db_blast_classifier/
 - classifier.py: Selecting the Best Hit: interprets BLAST results and ranks hits across multiple databases  
 - results_handler.py: Results Output Management: saves BLAST search results into the structured results/ directory  
 
+---
+
+## Example Usage (H1N1 Dataset)
+
+For a complete example of how to run the pipeline, please refer to the **USAGE.md** file.
+
+The usage guide includes a full working example using:
+
+- A local BLAST database built from an H1N1 dataset
+- A query file (`H1N1_Unknown.fasta`) containing unknown sequences
+- Step-by-step commands to:
+  - unzip the dataset
+  - create the database
+  - run BLAST
+  - classify the results
+
+This example demonstrates the full pipeline workflow using real biological data and is the recommended starting point for testing the project.
+
+Please see:
+USAGE.md
+for detailed instructions and command examples.
 
 ---
 
 ## License:
 All material is released under GNU GPL License, and can be freely used for both academic and commercial purposes.
+
+---
+
+## Authors: 
+Isabella Zuluaga Yusti - 801427563 - izuluaga@charlotte.edu - isabellazy  
+Candelaria Domingo - 801481207 - cdomingo@charlotte.edu - Sci-Glo  
+Patrick Bircher - 801490468 - pbircher@charlotte.edu - PBircher  
+
+Link to Project: https://github.com/isabellazy/Programming2_FinalProject
 
 ---
 
