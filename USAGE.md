@@ -6,9 +6,7 @@ Make sure BLAST+ is installed:
 conda create -n project_py -c conda-forge -c bioconda blast curl
 conda activate project_py
 ```
-
 Or create the enviroment using the yml 
-
 ```bash
 conda env create -f environment.yml
 conda activate project_py
@@ -16,7 +14,6 @@ conda activate project_py
 ---
 # Gives permissions to the run_test.sh and run_test.sh 
 You can run the test and this will unzip the H1N1 zip, create a database based on the fasta file, run blast againts a H1N1 Unknow query file  and classify it.
-
 ```bash
 chmod +x run_test.sh
 ./run_test.sh 
@@ -58,7 +55,7 @@ python3 main.py --db_name H1N1 --fasta_file databases/H1N1_2025.fasta --db_type 
 
 This will:
 
-* Create `databases/db1/`
+* Create `databases/H1N1/`
 * Move the FASTA into the directory
 * Generate BLAST index files
 
@@ -81,6 +78,8 @@ python3 main.py --show_config --config my_config.txt
 # 5. Run BLAST
 
 ## Run against one database
+
+Now we use the 16S_ribosomal_RNA that we download from ncbi we are going to run it manually 
 
 ```bash
 python3 main.py --run_blast --db_name 16S_ribosomal_RNA --query_file queries/16S_Unknown.fasta
@@ -107,9 +106,9 @@ results/
 # Example BLAST Output
 
 ```
-Query: query_match_bacteria
-database                subject_id      identity        alignment_length        evalue      bitscore
-16S_ribosomal_RNA       NR_156073.1     96.552          87                      2.67e-34    145.0
+Query: 16S_Unknown_1
+database                subject_id      identity        alignment_length        evalue          bitscore
+16S_ribosomal_RNA       NR_042538.1     81.818          187                     2.07e-35        148.0
 ```
 
 ---
@@ -123,15 +122,15 @@ python3 main.py --classify results/16S_Unknown/16S_Unknown_results.txt
 Example Output (console):
 
 ```
-H1N1_Unknown_1  H1N1_25|EPI_ISL_19689994
-H1N1_Unknown_2  H1N1_25|EPI_ISL_19776670
-H1N1_Unknown_3  H1N1_25|EPI_ISL_19786505
+16S_Unknown_1   NR_042538.1
+16S_Unknown_2   NR_156073.1
+16S_Unknown_3   NR_156073.1
 ```
 
 Also generates:
 
 ```
-results/H1N1_Unknown/H1N1_Unknown_classification.txt
+results/16S_Unknown/16S_Unknown_classification.txt
 ```
 
 ---
