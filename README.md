@@ -61,7 +61,9 @@ The usage guide includes a full working example using:
 This example demonstrates the full pipeline workflow using real biological data and is the recommended starting point for testing the project.
 
 Please see:
+
 USAGE.md
+
 for detailed instructions and command examples.
 
 ---
