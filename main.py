@@ -20,9 +20,9 @@ specific tasks to the corresponding modules.
 Typical usage:
     python3 main.py --list_databases
     python3 main.py --download_ncbi 16S_ribosomal_RNA
-    python3 main.py --db_name db1 --fasta_file databases/db1.fasta --db_type nucl
-    python3 main.py --run_blast --query_file queries/query1.fasta
-    python3 main.py --classify results/query1/query1_results.txt
+    python3 main.py --db_name H1N1 --fasta_file databases/H1N1_2025.fasta --db_type nucl
+    python3 main.py --run_blast --query_file queries/16S_Unknown.fasta
+    python3 main.py --classify results/16S_Unknown/16S_Unknown_results.txt
 """
 
 import os
@@ -31,9 +31,9 @@ import argparse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-sys.path.append(os.path.join(BASE_DIR, "Format_Library-Patrick"))
-sys.path.append(os.path.join(BASE_DIR, "BLAST_Library-Isabella"))
-sys.path.append(os.path.join(BASE_DIR, "Evaluation_Library-Candelaria"))
+sys.path.append(os.path.join(BASE_DIR, "Format_Library"))
+sys.path.append(os.path.join(BASE_DIR, "BLAST_Library"))
+sys.path.append(os.path.join(BASE_DIR, "Evaluation_Library"))
 
 from database_manager import (
     get_database,
@@ -87,7 +87,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--config",
-        default="Format_Library-Patrick/blast_config.txt",
+        default="Format_Library/blast_config.txt",
         help="Path to the configuration file"
     )
 
