@@ -44,6 +44,7 @@ def save_results(blast_results, query_file):
 
         for query_id, hits in blast_results.items():
             out.write(f"Query: {query_id}\n")
+            out.write("database\tsubject_id\tidentity\talignment_length\tevalue\tbitscore\n")
 
             if not hits:
                 out.write("No hits found\n\n")
