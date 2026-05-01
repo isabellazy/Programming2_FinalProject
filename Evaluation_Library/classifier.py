@@ -163,7 +163,8 @@ def load_blast_results(results_file: str) -> dict[str, list[dict]]:
                 current_query = line.replace("Query: ", "", 1)
                 all_query_results[current_query] = []
                 continue
-
+            if line.startswith("database\t"):
+                continue
             parts: list[str] = line.split("\t")
 
             if len(parts) != 6:
