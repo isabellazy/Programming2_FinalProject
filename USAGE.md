@@ -1,3 +1,6 @@
+# Running the run_test.sh Script
+This script runs a predefined test to verify that the program is working correctly.
+
 # Installation
 
 Make sure BLAST+ is installed:
@@ -12,7 +15,7 @@ conda env create -f environment.yml
 conda activate project_py
 ```
 ---
-# Gives permissions to the run_test.sh and run_test.sh 
+# Gives permissions to the run_test.sh and run run_test.sh 
 You can run the test and this will unzip the H1N1 zip, create a database based on the fasta file, run blast againts a H1N1 Unknow query file  and classify it.
 ```bash
 chmod +x run_test.sh
@@ -20,6 +23,8 @@ chmod +x run_test.sh
 ```
 
 ---
+# Manual Execution Instructions
+To run the program manually in a general way, follow these instructions:
 
 # 1. List Available Databases
 
@@ -79,7 +84,7 @@ python3 main.py --show_config --config my_config.txt
 
 ## Run against one database
 
-Now we use the 16S_ribosomal_RNA that we download from ncbi we are going to run it manually 
+Now we will use the 16S ribosomal RNA database downloaded from NCBI. We will run the analysis manually and use the unknown 16S query as a test case.es
 
 ```bash
 python3 main.py --run_blast --db_name 16S_ribosomal_RNA --query_file queries/16S_Unknown.fasta
