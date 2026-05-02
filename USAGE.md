@@ -43,6 +43,7 @@ db2
 
 ---
 # 2. Download an NCBI Database
+As an example, we will download the 16S ribosomal RNA database from NCBI.
 
 ```bash
 python3 main.py --download_ncbi 16S_ribosomal_RNA
@@ -85,7 +86,7 @@ python3 main.py --show_config --config my_config.txt
 
 ## Run against one database
 
-Now we will use the 16S ribosomal RNA database downloaded from NCBI. We will run the analysis manually and use the unknown 16S query as a test case.es
+We will use the 16S ribosomal RNA database downloaded from NCBI. We will run the analysis manually and use the unknown 16S query as a test case.
 
 ```bash
 python3 main.py --run_blast --db_name 16S_ribosomal_RNA --query_file queries/16S_Unknown.fasta
