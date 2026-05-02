@@ -75,7 +75,7 @@ Patrick Bircher - 801490468 - pbircher@charlotte.edu - PBircher
 
 ---
 
-## AI usage documentation
+## AI Acknowledgment
 ChatGPT (GPT-5.3) was used to generate parts of the project, including portions of the code across all libraries, the draft of the USAGE.md file, the draft of the PSEUDOCODE.md, and the initial version of the flowchart. All generated content was carefully reviewed, validated, and adjusted where necessary prior to submission.
 
 ---
