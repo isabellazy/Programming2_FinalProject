@@ -73,13 +73,23 @@ Isabella Zuluaga Yusti - 801427563 - izuluaga@charlotte.edu - isabellazy
 Candelaria Domingo - 801481207 - cdomingo@charlotte.edu - Sci-Glo  
 Patrick Bircher - 801490468 - pbircher@charlotte.edu - PBircher  
 
-Link to Project: https://github.com/isabellazy/Programming2_FinalProject
-
 ---
 
+## AI usage documentation
+ChatGPT (GPT-5.3) was used to generate parts of the project, including portions of the code across all libraries, the draft of the USAGE.md file, the draft of the PSEUDOCODE.md, and the initial version of the flowchart. All generated content was carefully reviewed, validated, and adjusted where necessary prior to submission.
+
+---
+## Link to Project: 
+
+https://github.com/isabellazy/Programming2_FinalProject
+
+---
 ## References:
 Altschul SF, Gish W, Miller W, Myers EW, Lipman DJ. Basic local alignment search tool. J Mol Biol. 1990 Oct 5;215(3):403-10. doi: 10.1016/S0022-2836(05)80360-2. PMID: 2231712.  
 
 Camacho, C. Building a BLAST database with your (local) sequences. in BLAST® Command Line Applications User Manual [Internet] (National Center for Biotechnology Information (US), 2024).  
 
 NCBI Magic-BLAST : Create a BLAST database. https://ncbi.github.io/magicblast/cook/blastdb.html.  
+
+--- 
+
