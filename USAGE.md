@@ -15,7 +15,7 @@ conda env create -f environment.yml
 conda activate project_py
 ```
 ---
-# Gives permissions to the run_test.sh and execute run_test.sh 
+# Give permissions to the run_test.sh and execute run_test.sh 
 This way, you can run the test, which will unzip the H1N1 archive, create a database from the FASTA file, run BLAST against an unknown H1N1 query sequence, and classify it.
 
 ```bash
