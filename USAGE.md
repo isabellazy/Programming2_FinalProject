@@ -1,5 +1,5 @@
 # Running the run_test.sh Script
-This script runs a predefined test to verify that the program is working correctly.
+This script runs a predefined test to verify that the program is working correctly:
 
 # Installation
 
