@@ -16,7 +16,8 @@ conda activate project_py
 ```
 ---
 # Gives permissions to the run_test.sh and execute run_test.sh 
-You can run the test and this will unzip the H1N1 zip, create a database based on the fasta file, run blast againts a H1N1 Unknow query file  and classify it.
+This way, you can run the test, which will unzip the H1N1 archive, create a database from the FASTA file, run BLAST against an unknown H1N1 query sequence, and classify it.
+
 ```bash
 chmod +x run_test.sh
 ./run_test.sh 
