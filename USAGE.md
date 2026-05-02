@@ -29,6 +29,8 @@ To run the program manually in a general way, follow these instructions:
 
 # 1. List Available Databases
 
+This step is optional and can be performed if required.
+
 ```bash
 python3 main.py --list_databases
 ```
@@ -42,33 +44,10 @@ db2
 ```
 
 ---
-# 2. Download an NCBI Database
-As an example, we will download the 16S ribosomal RNA database from NCBI.
 
-```bash
-python3 main.py --download_ncbi 16S_ribosomal_RNA
-```
-This will:
+# 2. View Configuration
 
-* Create databases/16S_ribosomal_RNA/
-* Download the database from NCBI
-* Extract all BLAST files inside that folder
----
-# 3. Create or Use a Database
-
-```bash
-python3 main.py --db_name H1N1 --fasta_file databases/H1N1_2025.fasta --db_type nucl
-```
-
-This will:
-
-* Create `databases/H1N1/`
-* Move the FASTA into the directory
-* Generate BLAST index files
-
----
-
-# 4. View Configuration
+This step is optional and can be performed if required.
 
 ```bash
 python3 main.py --show_config
@@ -82,7 +61,34 @@ python3 main.py --show_config --config my_config.txt
 
 ---
 
-# 5. Run BLAST
+# 3. Download an NCBI Database
+As an example, we will download the 16S ribosomal RNA database from NCBI.
+
+```bash
+python3 main.py --download_ncbi 16S_ribosomal_RNA
+```
+This will:
+
+* Create databases/16S_ribosomal_RNA/
+* Download the database from NCBI
+* Extract all BLAST files inside that folder
+---
+
+# 3.5. Create or use your own Database
+
+```bash
+python3 main.py --db_name H1N1 --fasta_file databases/H1N1_2025.fasta --db_type nucl
+```
+
+This will:
+
+* Create `databases/H1N1/`
+* Move the FASTA into the directory
+* Generate BLAST index files
+
+---
+
+# 4. Run BLAST
 
 ## Run against one database
 
